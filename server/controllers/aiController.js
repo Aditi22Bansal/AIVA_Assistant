@@ -159,12 +159,12 @@ export const generateImage = async (req, res) => {
     const { userId } = req.auth();
     const { prompt, publish } = req.body;
     const plan = req.plan;
-    const free_usage = req.free_usage;
 
-    if (plan != "premium" && free_usage >= 10) {
+    // Premium-only feature
+    if (plan !== "premium") {
       return res.json({
         success: false,
-        message: "This feature is only available for premium subscriptions.",
+        message: "This feature is only available for premium subscribers.",
       });
     }
 
@@ -307,12 +307,12 @@ export const removeImageBackground = async (req, res) => {
 
     const { userId } = req.auth();
     const plan = req.plan;
-    const free_usage = req.free_usage;
 
-    if (plan != "premium" && free_usage >= 10) {
+    // Premium-only feature
+    if (plan !== "premium") {
       return res.json({
         success: false,
-        message: "This feature is only available for premium subscriptions.",
+        message: "This feature is only available for premium subscribers.",
       });
     }
 
@@ -448,12 +448,12 @@ export const removeImageObject = async (req, res) => {
     const { userId } = req.auth();
     const { object } = req.body;
     const plan = req.plan;
-    const free_usage = req.free_usage;
 
-    if (plan != "premium" && free_usage >= 10) {
+    // Premium-only feature
+    if (plan !== "premium") {
       return res.json({
         success: false,
-        message: "This feature is only available for premium subscriptions.",
+        message: "This feature is only available for premium subscribers.",
       });
     }
 
@@ -585,12 +585,12 @@ export const resumeReview = async (req, res) => {
     const resume = req.file;
     const jobDescription = req.body?.jobDescription || '';
     const plan = req.plan;
-    const free_usage = req.free_usage;
 
-    if (plan != "premium" && free_usage >= 10) {
+    // Premium-only feature
+    if (plan !== "premium") {
       return res.json({
         success: false,
-        message: "This feature is only available for premium subscriptions.",
+        message: "This feature is only available for premium subscribers.",
       });
     }
 
