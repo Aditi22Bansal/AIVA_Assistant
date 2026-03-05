@@ -8,6 +8,19 @@ import fs from "fs";
 import { createRequire } from 'module'
 const require = createRequire(import.meta.url)
 
+// Polyfill browser geometry APIs required by pdfjs-dist v5 (used internally by pdf-parse v2)
+// @napi-rs/canvas is already a dependency of pdf-parse and provides these in Node.js
+if (typeof globalThis.DOMMatrix === 'undefined') {
+  try {
+    const { DOMMatrix, DOMPoint, DOMRect } = require('@napi-rs/canvas');
+    globalThis.DOMMatrix = DOMMatrix;
+    globalThis.DOMPoint = DOMPoint;
+    globalThis.DOMRect = DOMRect;
+  } catch (e) {
+    console.warn('Could not polyfill DOMMatrix from @napi-rs/canvas:', e.message);
+  }
+}
+
 export const generateArticle = async (req, res) => {
   try {
     const apiKey = process.env.GEMINI_AI_KEY || process.env.OPENAI_API_KEY;
@@ -228,9 +241,8 @@ export const generateImage = async (req, res) => {
       }
       return res.json({
         success: false,
-        message: `Network error: ${
-          axiosError.message || "Failed to connect to Clipdrop API"
-        }`,
+        message: `Network error: ${axiosError.message || "Failed to connect to Clipdrop API"
+          }`,
       });
     }
 
@@ -253,23 +265,20 @@ export const generateImage = async (req, res) => {
       console.error("Cloudinary Error:", cloudinaryError);
       return res.json({
         success: false,
-        message: `Failed to upload image to Cloudinary: ${
-          cloudinaryError.message || "Unknown error"
-        }`,
+        message: `Failed to upload image to Cloudinary: ${cloudinaryError.message || "Unknown error"
+          }`,
       });
     }
 
     try {
-      await sql` INSERT INTO creations (user_id, prompt, content, type, publish) VALUES (${userId}, ${prompt}, ${secure_url}, 'image', ${
-        publish ?? false
-      })`;
+      await sql` INSERT INTO creations (user_id, prompt, content, type, publish) VALUES (${userId}, ${prompt}, ${secure_url}, 'image', ${publish ?? false
+        })`;
     } catch (dbError) {
       console.error("Database Error:", dbError);
       return res.json({
         success: false,
-        message: `Failed to save creation to database: ${
-          dbError.message || "Unknown error"
-        }`,
+        message: `Failed to save creation to database: ${dbError.message || "Unknown error"
+          }`,
       });
     }
 
@@ -373,9 +382,8 @@ export const removeImageBackground = async (req, res) => {
       }
       return res.json({
         success: false,
-        message: `Network error: ${
-          axiosError.message || "Failed to connect to Clipdrop API"
-        }`,
+        message: `Network error: ${axiosError.message || "Failed to connect to Clipdrop API"
+          }`,
       });
     }
 
@@ -398,9 +406,8 @@ export const removeImageBackground = async (req, res) => {
       console.error("Cloudinary Error:", cloudinaryError);
       return res.json({
         success: false,
-        message: `Failed to upload image to Cloudinary: ${
-          cloudinaryError.message || "Unknown error"
-        }`,
+        message: `Failed to upload image to Cloudinary: ${cloudinaryError.message || "Unknown error"
+          }`,
       });
     }
 
@@ -410,9 +417,8 @@ export const removeImageBackground = async (req, res) => {
       console.error("Database Error:", dbError);
       return res.json({
         success: false,
-        message: `Failed to save creation to database: ${
-          dbError.message || "Unknown error"
-        }`,
+        message: `Failed to save creation to database: ${dbError.message || "Unknown error"
+          }`,
       });
     }
 
@@ -469,22 +475,22 @@ export const removeImageObject = async (req, res) => {
         message: `Failed to upload image: ${uploadError.message || "Unknown error"}`,
       });
     }
-    
+
     // Use Cloudinary's gen_remove effect with prompt
     // This uses Cloudinary's AI to remove objects based on text description
     let secure_url;
     try {
       // Generate the transformation URL - try different formats
       let transformationUrl;
-      
+
       // Use a highly precise and optimal prompt for exact object removal
       const objectPrompt = object.toLowerCase().trim();
-      
+
       // Best prompt format: Be explicit but concise
       // Key words that work best: "only", the object name, and preservation instructions
       // Format optimized for Cloudinary's AI understanding
       const optimalPrompt = `${objectPrompt} only`;
-      
+
       transformationUrl = cloudinary.url(public_id, {
         transformation: [
           {
@@ -493,14 +499,14 @@ export const removeImageObject = async (req, res) => {
         ],
         resource_type: "image",
       });
-      
+
       console.log("Optimal prompt used:", optimalPrompt);
-      
+
       console.log("Transformation URL:", transformationUrl);
       console.log("Object to remove:", objectPrompt);
-      
+
       console.log("Trying transformation URL:", transformationUrl);
-      
+
       // Fetch the transformed image with timeout
       const response = await axios.get(transformationUrl, {
         responseType: "arraybuffer",
@@ -509,16 +515,16 @@ export const removeImageObject = async (req, res) => {
           return status >= 200 && status < 400; // Accept 2xx and 3xx
         }
       });
-      
+
       if (!response.data || response.data.length === 0) {
         throw new Error("Received empty response from Cloudinary transformation");
       }
-      
+
       // Upload the processed image back to Cloudinary
       const base64Image = `data:image/png;base64,${Buffer.from(response.data).toString("base64")}`;
       const uploadResult = await cloudinary.uploader.upload(base64Image);
       secure_url = uploadResult.secure_url;
-      
+
     } catch (cloudinaryError) {
       console.error("Cloudinary AI transformation error:", {
         message: cloudinaryError.message,
@@ -526,7 +532,7 @@ export const removeImageObject = async (req, res) => {
         response: cloudinaryError.response?.status,
         url: cloudinaryError.config?.url,
       });
-      
+
       // If Cloudinary AI doesn't work, try alternative: use the original approach with Clipdrop
       // But we need a mask, so inform user about the limitation
       return res.json({
@@ -534,7 +540,7 @@ export const removeImageObject = async (req, res) => {
         message: `Object removal failed: ${cloudinaryError.message || "Unknown error"}. This feature requires Cloudinary AI add-on or a mask file. Please ensure your Cloudinary account has AI features enabled.`,
       });
     }
-    
+
     // Clean up the original uploaded file
     try {
       fs.unlinkSync(req.file.path);
@@ -548,9 +554,8 @@ export const removeImageObject = async (req, res) => {
       console.error("Database Error:", dbError);
       return res.json({
         success: false,
-        message: `Failed to save creation to database: ${
-          dbError.message || "Unknown error"
-        }`,
+        message: `Failed to save creation to database: ${dbError.message || "Unknown error"
+          }`,
       });
     }
 
@@ -602,28 +607,26 @@ export const resumeReview = async (req, res) => {
     }
 
     const dataBuffer = fs.readFileSync(resume.path);
-    
-    // Require pdf-parse inside the function to ensure it's loaded correctly
-    // pdf-parse v2+ uses PDFParse class
+
+    // Parse PDF - pdf-parse v2 requires DOMMatrix (polyfilled above at module load)
     const pdfParseModule = require('pdf-parse');
     const PDFParseClass = pdfParseModule.PDFParse;
-    
+
     if (!PDFParseClass || typeof PDFParseClass !== 'function') {
       return res.json({
         success: false,
-        message: `PDF parsing error: pdf-parse module not loaded correctly.`,
+        message: `PDF parsing error: pdf-parse module not loaded correctly. Please ensure pdf-parse v2+ is installed.`,
       });
     }
-    
-    // PDFParse is a class in v2+, instantiate with { data: buffer } and call getText()
+
+    // Instantiate PDFParse and extract text
     const pdfParser = new PDFParseClass({ data: dataBuffer });
     let pdfData;
     try {
       const result = await pdfParser.getText();
-      pdfData = { text: result.text || result };
+      pdfData = { text: typeof result === 'string' ? result : (result.text || '') };
     } finally {
-      // Clean up resources
-      await pdfParser.destroy();
+      try { await pdfParser.destroy(); } catch (_) { }
     }
 
     // Get current date for accurate date interpretation
@@ -631,7 +634,7 @@ export const resumeReview = async (req, res) => {
     const currentYear = currentDate.getFullYear();
     const currentMonth = currentDate.getMonth() + 1; // 1-12
     const currentDateString = `${currentMonth}/${currentDate.getDate()}/${currentYear}`;
-    
+
     const prompt = `You are an expert resume reviewer and career counselor. Review the following resume comprehensively and provide detailed, constructive feedback.
 
 CRITICAL: DATE INTERPRETATION INSTRUCTIONS
