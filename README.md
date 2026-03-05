@@ -6,11 +6,12 @@
 ![React](https://img.shields.io/badge/React-19-61DAFB?style=for-the-badge&logo=react&logoColor=black)
 ![Node.js](https://img.shields.io/badge/Node.js-Express-339933?style=for-the-badge&logo=node.js&logoColor=white)
 ![PostgreSQL](https://img.shields.io/badge/PostgreSQL-NeonDB-336791?style=for-the-badge&logo=postgresql&logoColor=white)
+[![Live Demo](https://img.shields.io/badge/🌐%20Live%20Demo-Vercel-000000?style=for-the-badge&logo=vercel&logoColor=white)](https://quick-ai-six-sooty.vercel.app/)
 
 **Transform your content creation with a suite of premium AI tools.**  
 Write articles, generate images, review resumes, and more — all in one place.
 
-[✨ Features](#-features) • [🛠 Tech Stack](#-tech-stack) • [🚀 Getting Started](#-getting-started) • [📁 Project Structure](#-project-structure) • [🔑 Environment Variables](#-environment-variables)
+[🌐 Live Demo](https://quick-ai-six-sooty.vercel.app/) • [✨ Features](#-features) • [🛠 Tech Stack](#-tech-stack) • [🚀 Getting Started](#-getting-started) • [📁 Project Structure](#-project-structure) • [🔑 Environment Variables](#-environment-variables)
 
 </div>
 
