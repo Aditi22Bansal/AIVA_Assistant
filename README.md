@@ -11,7 +11,7 @@
 **Transform your content creation with a suite of premium AI tools.**  
 Write articles, generate images, review resumes, and more — all in one place.
 
-[🌐 Live Demo](https://quick-ai-six-sooty.vercel.app/) • [✨ Features](#-features) • [🛠 Tech Stack](#-tech-stack) • [🚀 Getting Started](#-getting-started) • [📁 Project Structure](#-project-structure) • [🔑 Environment Variables](#-environment-variables)
+ • [✨ Features](#-features) • [🛠 Tech Stack](#-tech-stack) • [🚀 Getting Started](#-getting-started) • [📁 Project Structure](#-project-structure) • [🔑 Environment Variables](#-environment-variables)
 
 </div>
 
